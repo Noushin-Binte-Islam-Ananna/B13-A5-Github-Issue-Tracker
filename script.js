@@ -179,7 +179,7 @@ function filterIssues(status, btn) {
     renderCards(filtered);
 }
 
-// Search functionality using API
+//Live search functionality using API & loader implementation
 searchInput.addEventListener('input', async (e) => {
 
     const query = e.target.value.trim();
