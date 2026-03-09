@@ -179,5 +179,37 @@ function filterIssues(status, btn) {
     renderCards(filtered);
 }
 
+// Search functionality using API
+searchInput.addEventListener('input', async (e) => {
+
+    const query = e.target.value.trim();
+
+    if(query === ""){
+        renderCards(allIssues);
+        return;
+    }
+
+    loader.classList.remove('hidden');
+
+    try {
+
+        const res = await fetch(`${API}/issues/search?q=${query}`);
+        const result = await res.json();
+
+        renderCards(result.data);
+
+    } catch (err) {
+
+        container.innerHTML = `
+        <p class="col-span-full text-center text-red-500 font-bold">
+        Search failed.
+        </p>`;
+
+    }
+
+    loader.classList.add('hidden');
+
+});
+
 // Page Load
 window.onload = fetchIssues;
