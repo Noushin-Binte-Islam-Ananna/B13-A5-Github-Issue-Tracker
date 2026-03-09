@@ -26,6 +26,7 @@ if (loginForm) {
         }
     });
 }
+
 const API = "https://phi-lab-server.vercel.app/api/v1/lab";
 
 const container = document.getElementById('issuesContainer');
@@ -33,9 +34,7 @@ const countDisplay = document.getElementById('countDisplay');
 
 let allIssues = [];
 
-
 // fetch and render issues
-
 async function fetchIssues() {
 
     loader.classList.remove('hidden');
@@ -61,4 +60,6 @@ async function fetchIssues() {
 
     loader.classList.add('hidden');
 }
+
+//Rendering cards
 
