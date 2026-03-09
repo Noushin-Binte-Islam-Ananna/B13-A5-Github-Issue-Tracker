@@ -31,10 +31,12 @@ const API = "https://phi-lab-server.vercel.app/api/v1/lab";
 
 const container = document.getElementById('issuesContainer');
 const countDisplay = document.getElementById('countDisplay');
+const loader = document.getElementById('loader');
+const searchInput = document.getElementById('searchInput');
 
 let allIssues = [];
 
-// fetch and render issues
+// Fetch all issues from API and render on page load
 async function fetchIssues() {
 
     loader.classList.remove('hidden');
@@ -61,7 +63,7 @@ async function fetchIssues() {
     loader.classList.add('hidden');
 }
 
-//Rendering cards
+// Render Issue Cards
 function renderCards(data) {
 
     if(data.length === 0){
@@ -157,7 +159,6 @@ function renderCards(data) {
 }
 
 // Filter issues based on status
-
 function filterIssues(status, btn) {
 
     document.querySelectorAll('.tab-btn').forEach(b => {
@@ -179,7 +180,7 @@ function filterIssues(status, btn) {
     renderCards(filtered);
 }
 
-//Live search functionality using API & loader implementation
+// Live search functionality using API & loader implementation
 searchInput.addEventListener('input', async (e) => {
 
     const query = e.target.value.trim();
@@ -211,5 +212,122 @@ searchInput.addEventListener('input', async (e) => {
 
 });
 
-// Page Load
+// Open Modal with Issue Details
+async function openModal(id) {
+
+    const modal = document.getElementById('issueModal');
+    const modalContent = document.getElementById('modalContent');
+
+    modal.classList.remove('hidden');
+
+    modalContent.innerHTML = `
+    <p class="text-center py-10 font-bold text-gray-400 animate-pulse">
+    Fetching details...
+    </p>`;
+
+    try {
+
+        const res = await fetch(`${API}/issue/${id}`);
+        const result = await res.json();
+
+        const issue = result.data;
+
+        modalContent.innerHTML = `
+
+        <h2 class="text-3xl font-bold text-black mb-3">
+        ${issue.title}
+        </h2>
+
+        <div class="flex items-center gap-3 mb-6 text-sm font-medium text-gray-500">
+
+            <span class="px-3 py-1 bg-[#00A96E] text-white rounded-full">
+            Opened
+            </span>
+
+            <span>&bull;</span>
+
+            <span>
+            Opened by <span class="text-[#64748B]">${issue.author}</span>
+            </span>
+
+            <span>&bull;</span>
+
+            <span>
+            ${new Date(issue.createdAt).toLocaleDateString('en-GB')}
+            </span>
+
+        </div>
+
+
+        <div class="flex gap-2 mb-8">
+
+            <span class="text-[10px] bg-[#FEECEC] text-[#EF4444] px-3 py-2 rounded-full border border-[#FECACA] uppercase">
+            <i class="fas fa-bug"></i> ${issue.category}
+            </span>
+
+            <span class="text-[10px] bg-[#FFF8DB] text-[#D97706] px-3 py-2 rounded-full border border-[#FDE68A] uppercase">
+            <i class="fa-solid fa-life-ring"></i> HELP WANTED
+            </span>
+
+        </div>
+
+
+        <p class="text-gray-600 mb-8 text-lg">
+        ${issue.description}
+        </p>
+
+
+        <div class="grid grid-cols-2 gap-8 p-6 bg-[#F8FAFC] rounded-xl">
+
+            <div>
+                <p class="text-gray-400 mb-2">
+                Assignee:
+                </p>
+
+                <p class="font-bold text-lg">
+                ${issue.author}
+                </p>
+            </div>
+
+
+            <div>
+                <p class="text-gray-400 mb-2">
+                Priority:
+                </p>
+
+                <span class="px-4 py-1 bg-[#EF4444] text-white rounded-full uppercase">
+                ${issue.priority}
+                </span>
+            </div>
+
+        </div>
+        `;
+
+    } catch (err) {
+
+        modalContent.innerHTML = `
+        <p class="text-red-500 font-bold text-center">
+        Failed to load issue details.
+        </p>`;
+
+    }
+
+}
+
+// Close Modal function
+function closeModal(){
+    document.getElementById('issueModal').classList.add('hidden');
+}
+
+
+// close when clicking outside modal
+document.getElementById('issueModal').addEventListener('click', function(e){
+
+    if(e.target.id === "issueModal"){
+        closeModal();
+    }
+
+});
+
+// Page load - fetch and display all issues 
 window.onload = fetchIssues;
